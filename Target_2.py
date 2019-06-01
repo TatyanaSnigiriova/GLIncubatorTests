@@ -11,7 +11,7 @@
 """
 
 import re
-f = open('input.txt')
+f = open('strings.txt')
 pattern = re.compile('\S+')
 result = pattern.findall(f.readline())
 print(len(result))
