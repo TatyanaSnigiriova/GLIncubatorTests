@@ -1,14 +1,15 @@
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class Target_5
-{
+public class Target_5 {
+    private static long timeWaitingInSec1 = 60;
+    private static long timeWaitingInSec2 = 2000;
+
     public static void main(String[] args) {
         System.setProperty("webdriver.gecko.driver", "drivers\\geckodriver.exe");
         WebDriver driver = new FirefoxDriver();
@@ -24,76 +25,71 @@ public class Target_5
     {
         System.out.println("Case 1:");
 
-        driver.get("https://rasp.yandex.ru/");
-        driver.manage().timeouts().implicitlyWait(1000, TimeUnit.SECONDS);
+        SearchQueryPage searchPage = new SearchQueryPage(driver);
+        if (!searchPage.setImplicitlyWait(timeWaitingInSec1).equals("OK"))
+            System.out.println("Проверьте на корректность поле 'timeWaitingInSec1'!");
 
-        putInField(driver, "from", "Кемерово");
-        putInField(driver, "to", "Москва");
-        putInField(driver, "when", "7 июля");
+        ResponsePage responsePage = searchPage.searchQuery("Кемерово", "Москва", "7 июля");
 
-        driver.findElement(By.xpath("//span[text()='Найти']/ancestor::button")).click();
-
-
-        String xPathBegin = "//article";
-        List<WebElement> article = driver.findElements(By.xpath(xPathBegin));
+        List<WebElement> articles = responsePage.getArticles();
         int line = 0;
         int countException = 0;
-        for (WebElement art: article)
+        for (WebElement art: articles)
         {
             line ++;
-            String xPathEnd = "//span[@class='SegmentTitle__number']";
-            if (IsElementFound(driver, xPathBegin.concat(xPathEnd))) {
-                WebElement el = art.findElement(By.xpath(xPathEnd));
-                if (el.getText().equals("")) {
+            String checkRouteForArt = responsePage.checkRouteForArticle(art);
+            if (!checkRouteForArt.equals(responsePage.OK)) {
+                if (checkRouteForArt.contains(responsePage.exc_EMPTY)){
                     System.err.println("    Ошибка: Для " + line + " строки расписания задан пустой рейс.");
                     countException++;
                 }
-            }
-            else {
-                System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для названия рейса." );
-                countException++;
-            }
-
-            xPathEnd = "//div[contains(@class, 'duration')]";
-            if (IsElementFound(driver, xPathBegin.concat(xPathEnd))) {
-                WebElement el = art.findElement(By.xpath(xPathEnd));
-                if (el.getText().equals("")) {
-                    System.err.println("    Ошибка: Для " + line + " строки расписания не задано время в пути.");
+                if (checkRouteForArt.contains(responsePage.exc_FIELD_NOT_EXIST)) {
+                    System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для названия рейса." );
                     countException++;
                 }
             }
-            else {
-                System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для указания " +
-                        "времени в пути.");
-                countException++;
+
+            String checkTravelTimeForArt = responsePage.checkTravelTimeForArticle(art);
+            if (!checkTravelTimeForArt.equals(responsePage.OK)) {
+                if (checkTravelTimeForArt.contains(responsePage.exc_EMPTY)){
+                    System.err.println("    Ошибка: Для " + line + " строки расписания не задано время в пути.");
+                    countException++;
+                }
+                if (checkTravelTimeForArt.contains(responsePage.exc_FIELD_NOT_EXIST)) {
+                    System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для указания " +
+                            "времени в пути." );
+                    countException++;
+                }
             }
 
-            xPathEnd = "//*[@class = 'TransportIcon__icon']";
-            if (!IsElementFound(driver, xPathBegin.concat(xPathEnd))) {
-                System.out.println("    Ошибка: Для " + Integer.toString(line) + " строки расписания не задан '<svg>' для иконки транспорта.");
+            String checkIconForArt = responsePage.checkIconForArticle(art);
+            if (checkIconForArt.contains(responsePage.exc_FIELD_NOT_EXIST)){
+                System.err.println("    Ошибка: Для " + line + " строки расписания не задан '<svg>' для иконки транспорта.");
                 countException++;
             }
         }
-        if (article.size() != 5)
+
+        if (articles.size() != 5)
         {
             System.err.println("    Ошибка: По запросу выдано не 5 рейсов.");
             countException++;
         }
+
         if (countException == 0)
             return true;
         else
             return false;
     }
 
+
     public static boolean case_2(WebDriver driver)
     {
         System.out.println("Case 2:");
 
-        driver.get("https://rasp.yandex.ru/");
-        driver.manage().timeouts().implicitlyWait(2000, TimeUnit.SECONDS);
+        SearchQueryPage searchPage = new SearchQueryPage(driver);
+        if (!searchPage.setImplicitlyWait(timeWaitingInSec2).equals(searchPage.OK))
+            System.out.println("Проверьте на корректность поле 'timeWaitingInSec1'!");
 
-        putInField(driver, "from", "Кемерово проспект Ленина");
-        putInField(driver, "to", "Кемерово Бакинский переулок");
         Calendar calendar = new GregorianCalendar();
         // Если бы этот сервис понимал запись '7 июнь', то можно было бы воспользоваться классом SimpleDateFormat, но он
         // такое не принимает и просит меня выбрать дату в календаре, а по заданию дату нужно вписать.
@@ -101,46 +97,23 @@ public class Target_5
         toNearWednesday(calendar);
         String data = getDayAndMonth(calendar);
 
-        putInField(driver, "when", data );
+        searchPage.fullAllFields("Кемерово проспект Ленина", "Кемерово Бакинский переулок", data);
+        searchPage.clickOnButBus();
+        ResponsePage responsePage = searchPage.clickButFind();
 
-        driver.findElement(By.xpath("//div[@class='TransportSelector']//span[text()='Автобус']")).click();
-        driver.findElement(By.xpath("//span[text()='Найти']/ancestor::button")).click();
-
-        String xPathBegin = "//div[@class='ErrorPage']";
-        if (IsElementFound(driver, xPathBegin))
-        {
-            WebElement errorpage = driver.findElement(By.xpath(xPathBegin));
+        String checkErrorPage = responsePage.checkErrorPage();
+        if (checkErrorPage.equals(responsePage.OK)) {
+            WebElement errorpage = responsePage.getErrorPage();
             String erPointOfDest = "Пункт прибытия не найден. Проверьте правильность написания или выберите другой город.";
-            String xPathPattern = "//div[text()='%s']";
-            String xPathEnd = String.format(xPathPattern, erPointOfDest);
-            if (IsElementFound (driver, xPathBegin.concat(xPathEnd)))
-                return  true;
-            else{
+            String checkErrorMessage = responsePage.checkErrorMessage(errorpage, erPointOfDest);
+            if (checkErrorMessage.equals(responsePage.exc_FIELD_NOT_EXIST)) {
                 System.err.println("Ошибка: Ошибка с текстом '" + erPointOfDest + "' не найдена.");
                 return false;
             }
-        }
-        else{
+            else
+                return true;
+        } else {
             System.err.println("Ух ты! Похоже, по Вашему запросу что-то нашлось, и это не страница с ошибкой.");
-            return false;
-        }
-    }
-
-
-    private static void putInField(WebDriver driver, String id, String value)
-    {
-        WebElement from = driver.findElement(By.id(id));
-        from.clear();
-        from.sendKeys(value);
-    }
-
-
-    private static boolean IsElementFound (WebDriver driver, String xPath)
-    {
-        try {
-            driver.findElement(By.xpath(xPath));
-            return true;
-        } catch (org.openqa.selenium.NoSuchElementException e) {
             return false;
         }
     }
