@@ -2,7 +2,6 @@ import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -13,7 +12,7 @@ public class Target_5_Test {
     private long timeWaitingInSec2 = 2000;
 
     @BeforeClass
-    public static void setProperty(){
+    public static void setProperty() {
         System.setProperty("webdriver.gecko.driver", "drivers\\geckodriver.exe");
         driver = new FirefoxDriver();
         driver.manage().window().maximize();
@@ -22,8 +21,7 @@ public class Target_5_Test {
 
     // Для данного теста можно было сделать тестовый класс, наверное
     @Test
-    public void case_1()
-    {
+    public void case_1() {
         System.out.println("Case 1:");
         SearchQueryPage searchPage = new SearchQueryPage(driver);
 
@@ -35,36 +33,35 @@ public class Target_5_Test {
         List<WebElement> articles = responsePage.getArticles();
         int line = 0;
         int countException = 0;
-        for (WebElement art: articles)
-        {
-            line ++;
+        for (WebElement art : articles) {
+            line++;
             String checkRouteForArt = responsePage.checkRouteForArticle(art);
             if (!checkRouteForArt.equals(responsePage.OK)) {
-                if (checkRouteForArt.contains(responsePage.exc_EMPTY)){
+                if (checkRouteForArt.contains(responsePage.exc_EMPTY)) {
                     System.err.println("    Ошибка: Для " + line + " строки расписания задан пустой рейс.");
                     countException++;
                 }
                 if (checkRouteForArt.contains(responsePage.exc_FIELD_NOT_EXIST)) {
-                    System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для названия рейса." );
+                    System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для названия рейса.");
                     countException++;
                 }
             }
 
             String checkTravelTimeForArt = responsePage.checkTravelTimeForArticle(art);
             if (!checkTravelTimeForArt.equals(responsePage.OK)) {
-                if (checkTravelTimeForArt.contains(responsePage.exc_EMPTY)){
+                if (checkTravelTimeForArt.contains(responsePage.exc_EMPTY)) {
                     System.err.println("    Ошибка: Для " + line + " строки расписания не задано время в пути.");
                     countException++;
                 }
                 if (checkTravelTimeForArt.contains(responsePage.exc_FIELD_NOT_EXIST)) {
                     System.err.println("    Ошибка: Для " + line + " строки расписания не задано поле для указания " +
-                            "времени в пути." );
+                            "времени в пути.");
                     countException++;
                 }
             }
 
             String checkIconForArt = responsePage.checkIconForArticle(art);
-            if (checkIconForArt.contains(responsePage.exc_FIELD_NOT_EXIST)){
+            if (checkIconForArt.contains(responsePage.exc_FIELD_NOT_EXIST)) {
                 System.err.println("    Ошибка: Для " + line + " строки расписания не задан '<svg>' для иконки транспорта.");
                 countException++;
             }
@@ -77,8 +74,7 @@ public class Target_5_Test {
 
     // Он ведь не должен работать через раз, но почему-то работает он именно так.
     @Test
-    public void case_2()
-    {
+    public void case_2() {
         System.out.println("Case 2:");
         SearchQueryPage searchPage = new SearchQueryPage(driver);
 
@@ -134,11 +130,10 @@ public class Target_5_Test {
         }
     }
 
-    private static String getDayAndMonth (Calendar calendar){
+    private static String getDayAndMonth(Calendar calendar) {
         String data = calendar.get(Calendar.DAY_OF_MONTH) + " ";
 
-        switch (calendar.get(Calendar.MONTH))
-        {
+        switch (calendar.get(Calendar.MONTH)) {
             case Calendar.JANUARY:
                 data.concat("января");
                 break;
@@ -181,8 +176,7 @@ public class Target_5_Test {
 
 
     @AfterClass
-    public static void endTests(){
+    public static void endTests() {
         driver.quit();
     }
-
 }
