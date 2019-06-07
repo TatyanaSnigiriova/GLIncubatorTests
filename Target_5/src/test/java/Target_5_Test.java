@@ -1,3 +1,4 @@
+import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -6,26 +7,26 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class Target_5 {
-    private static long timeWaitingInSec1 = 60;
-    private static long timeWaitingInSec2 = 2000;
+public class Target_5_Test {
+    private static WebDriver driver;
+    private long timeWaitingInSec1 = 60;
+    private long timeWaitingInSec2 = 2000;
 
-    public static void main(String[] args) {
+    @BeforeClass
+    public static void setProperty(){
         System.setProperty("webdriver.gecko.driver", "drivers\\geckodriver.exe");
-        WebDriver driver = new FirefoxDriver();
+        driver = new FirefoxDriver();
         driver.manage().window().maximize();
-        if (case_1(driver))
-            System.out.println("    OK!");
-        if (case_2(driver))
-            System.out.println("    OK!");
-//        driver.quit();
     }
 
-    public static boolean case_1(WebDriver driver)
+
+    // Для данного теста можно было сделать тестовый класс, наверное
+    @Test
+    public void case_1()
     {
         System.out.println("Case 1:");
-
         SearchQueryPage searchPage = new SearchQueryPage(driver);
+
         if (!searchPage.setImplicitlyWait(timeWaitingInSec1).equals("OK"))
             System.out.println("Проверьте на корректность поле 'timeWaitingInSec1'!");
 
@@ -69,24 +70,17 @@ public class Target_5 {
             }
         }
 
-        if (articles.size() != 5)
-        {
-            System.err.println("    Ошибка: По запросу выдано не 5 рейсов.");
-            countException++;
-        }
-
-        if (countException == 0)
-            return true;
-        else
-            return false;
+        Assert.assertEquals("Ошибка: По запросу выдано не 5 рейсов.", articles.size(), 5);
+        System.out.println("    OK!");
     }
 
-
-    public static boolean case_2(WebDriver driver)
+    // Он ведь не должен работать через раз, но почему-то работает он именно так.
+    @Test
+    public void case_2()
     {
         System.out.println("Case 2:");
-
         SearchQueryPage searchPage = new SearchQueryPage(driver);
+
         if (!searchPage.setImplicitlyWait(timeWaitingInSec2).equals(searchPage.OK))
             System.out.println("Проверьте на корректность поле 'timeWaitingInSec1'!");
 
@@ -102,20 +96,15 @@ public class Target_5 {
         ResponsePage responsePage = searchPage.clickButFind();
 
         String checkErrorPage = responsePage.checkErrorPage();
-        if (checkErrorPage.equals(responsePage.OK)) {
-            WebElement errorpage = responsePage.getErrorPage();
-            String erPointOfDest = "Пункт прибытия не найден. Проверьте правильность написания или выберите другой город.";
-            String checkErrorMessage = responsePage.checkErrorMessage(errorpage, erPointOfDest);
-            if (checkErrorMessage.equals(responsePage.exc_FIELD_NOT_EXIST)) {
-                System.err.println("Ошибка: Ошибка с текстом '" + erPointOfDest + "' не найдена.");
-                return false;
-            }
-            else
-                return true;
-        } else {
-            System.err.println("Ух ты! Похоже, по Вашему запросу что-то нашлось, и это не страница с ошибкой.");
-            return false;
-        }
+
+        Assert.assertTrue("Ух ты! Похоже, по Вашему запросу что-то нашлось, и это не страница с ошибкой.", checkErrorPage.equals(responsePage.OK));
+
+        WebElement errorpage = responsePage.getErrorPage();
+        String erPointOfDest = "Пункт прибытия не найден. Проверьте правильность написания или выберите другой город.";
+        String checkErrorMessage = responsePage.checkErrorMessage(errorpage, erPointOfDest);
+        Assert.assertFalse("Ошибка: Ошибка с текстом '" + erPointOfDest + "' не найдена.", checkErrorMessage.equals(responsePage.exc_FIELD_NOT_EXIST));
+        System.out.println("    OK!");
+
     }
 
 
@@ -189,4 +178,11 @@ public class Target_5 {
         }
         return data;
     }
+
+
+    @AfterClass
+    public static void endTests(){
+        driver.quit();
+    }
+
 }
