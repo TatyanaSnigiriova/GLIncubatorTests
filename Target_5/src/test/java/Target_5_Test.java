@@ -74,6 +74,7 @@ public class Target_5_Test {
         System.out.println("    OK!");
     }
 
+
     // Он ведь не должен работать через раз, но почему-то работает он именно так.
     @Test
     public void case_2()
@@ -104,7 +105,6 @@ public class Target_5_Test {
         String checkErrorMessage = responsePage.checkErrorMessage(errorpage, erPointOfDest);
         Assert.assertFalse("Ошибка: Ошибка с текстом '" + erPointOfDest + "' не найдена.", checkErrorMessage.equals(responsePage.exc_FIELD_NOT_EXIST));
         System.out.println("    OK!");
-
     }
 
 
