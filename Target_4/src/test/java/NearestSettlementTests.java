@@ -23,8 +23,8 @@ public class NearestSettlementTests extends NearestSettlement {
         ValidatableResponse req = given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 param(r_lat, 55.388645).
                 param(r_lng, 86.098903).
                 param(r_dist, 50).
@@ -43,8 +43,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format,  Config.getJson()).
                 param(r_lat, 55.753595).
                 param(r_lng, 37.621031).
                 param(r_lang, "uk_UA").
@@ -61,8 +61,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format,  Config.getJson()).
                 param(r_lat, 21.222583).
                 param(r_lng, -157.751001).
                 param(r_dist, 50).
@@ -83,8 +83,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format,  Config.getJson()).
                 param(r_lat, 55.35488).
                 param(r_lng, 86.08684).
                 param(r_dist, 0).
@@ -102,8 +102,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 param(r_lat, 55.35488).
                 param(r_lng, 86.08684).
                 param(r_dist, 0.001).
@@ -122,8 +122,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format,  Config.getJson()).
                 param(r_lat, 55.35488).
                 param(r_lng, 86.08684).
                 param(r_dist, 1).
@@ -141,8 +141,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 param(r_lat, -55.069065).
                 param(r_lng, -124.460701).
                 param(r_dist, 50).
@@ -150,7 +150,7 @@ public class NearestSettlementTests extends NearestSettlement {
                 get(localHTTPS).
                 then().
                 statusCode(404).
-                body(Error.getText(), equalTo("Населенный пункт не найден"));
+                body(Error.getE_text(), equalTo("Населенный пункт не найден"));
     }
 
     // 2) Запрос без обязательных параметров
@@ -159,13 +159,13 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 when().
                 get(localHTTPS).
                 then().
                 statusCode(400).
-                body(Error.getError_code(), equalTo("v3.0_release-3.105.0_284"));
+                body(Error.getE_error_code(), equalTo("v3.0_release-3.105.0_284"));
     }
 
     // 3) Запрос с 'запредельным' расстоянием 1
@@ -174,8 +174,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 param(r_lat, 55.388645).
                 param(r_lng, 86.098903).
                 param(r_dist, 51).
@@ -183,7 +183,7 @@ public class NearestSettlementTests extends NearestSettlement {
                 get(localHTTPS).
                 then().
                 statusCode(400).
-                body(Error.getText(), equalTo("distance: Параметр distance должен быть числом от 0 до 50, по умолчанию 10"));
+                body(Error.getE_text(), equalTo("distance: Параметр distance должен быть числом от 0 до 50, по умолчанию 10"));
     }
 
     // 4) Запрос с чуть 'запредельным' расстоянием
@@ -192,8 +192,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 param(r_lat, 55.388645).
                 param(r_lng, 86.098903).
                 param(r_dist, 100).
@@ -201,7 +201,7 @@ public class NearestSettlementTests extends NearestSettlement {
                 get(localHTTPS).
                 then().
                 statusCode(400).
-                body(Error.getText(), equalTo("distance: Параметр distance должен быть числом от 0 до 50, по умолчанию 10"));
+                body(Error.getE_text(), equalTo("distance: Параметр distance должен быть числом от 0 до 50, по умолчанию 10"));
     }
 
     // 5) Запрос с отрицательным расстоянием
@@ -210,8 +210,8 @@ public class NearestSettlementTests extends NearestSettlement {
         given().
                 baseUri(Config.getHTTPS()).
                 contentType(ContentType.JSON).
-                header("Authorization", Config.getKey()).
-                param(r_format, "json").
+                header(Config.getAuth(), Config.getKey()).
+                param(r_format, Config.getJson()).
                 param(r_lat, 55.388645).
                 param(r_lng, 86.098903).
                 param(r_dist, -10100).
@@ -219,7 +219,7 @@ public class NearestSettlementTests extends NearestSettlement {
                 get(localHTTPS).
                 then().
                 statusCode(400).
-                body(Error.getText(), equalTo("distance: Параметр distance должен быть числом от 0 до 50, по умолчанию 10"));
+                body(Error.getE_text(), equalTo("distance: Параметр distance должен быть числом от 0 до 50, по умолчанию 10"));
     }
 
 }

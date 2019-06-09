@@ -1,0 +1,9 @@
+Для реализации тестов были использованы Java, Maven, JUnit5, Selenium WebDriver.
+ОС Win 10(x64)
+IntelliJ IDEA Community Edition 2018.3.1 x64
+Запуск программы из среды правой кнопкой мыши на test/java - "Run 'All Tests'"
+
+
+
+
+
